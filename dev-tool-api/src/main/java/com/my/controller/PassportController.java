@@ -3,7 +3,9 @@ package com.my.controller;
 import com.my.pojo.BO.UserBO;
 import com.my.pojo.Users;
 import com.my.service.UserService;
+import com.my.utils.CookieUtils;
 import com.my.utils.JSONResult;
+import com.my.utils.JsonUtils;
 import com.my.utils.MD5Utils;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -11,6 +13,9 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 /**
  * @Author xzw
@@ -69,7 +74,7 @@ public class PassportController {
 
     @ApiOperation(value = "用户登录",notes = "用于用户登录",httpMethod = "POST")
     @PostMapping("login")
-    public JSONResult login(@RequestBody UserBO userBO) throws Exception{
+    public JSONResult login(@RequestBody UserBO userBO, HttpServletRequest request, HttpServletResponse response) throws Exception{
         String username = userBO.getUsername();
         String password = userBO.getPassword();
 
@@ -84,6 +89,20 @@ public class PassportController {
         if(users == null){
             return JSONResult.errorMsg("用户名或密码不正确");
         }
+
+        users = setNullProperty(users);
+
+        CookieUtils.setCookie(request,response,"username", JsonUtils.objectToJson(users),true);
         return JSONResult.ok(users);
+    }
+
+    private Users setNullProperty(Users users){
+        users.setBirthday(null);
+        users.setCreatedTime(null);
+        users.setEmail(null);
+        users.setPassword(null);
+        users.setUpdatedTime(null);
+        users.setMobile(null);
+        return users;
     }
 }
