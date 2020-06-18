@@ -10,6 +10,8 @@ import com.my.utils.MD5Utils;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
@@ -25,6 +27,8 @@ import javax.servlet.http.HttpServletResponse;
 @RestController
 @RequestMapping("passport")
 public class PassportController {
+
+    public static Logger logger = LoggerFactory.getLogger(PassportController.class);
 
     @Autowired
     UserService userService;
@@ -92,8 +96,18 @@ public class PassportController {
 
         users = setNullProperty(users);
 
-        CookieUtils.setCookie(request,response,"username", JsonUtils.objectToJson(users),true);
+        CookieUtils.setCookie(request,response,"user", JsonUtils.objectToJson(users),true);
         return JSONResult.ok(users);
+    }
+
+    @ApiOperation(value = "用户退出登录",notes = "用于用户退出登录",httpMethod = "POST")
+    @PostMapping("logout")
+    public JSONResult login(@RequestBody String userId,
+                            HttpServletRequest request,
+                            HttpServletResponse response) throws Exception{
+        CookieUtils.deleteCookie(request,response,"user");
+
+        return JSONResult.ok(null);
     }
 
     private Users setNullProperty(Users users){
