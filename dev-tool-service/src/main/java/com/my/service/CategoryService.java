@@ -2,6 +2,7 @@ package com.my.service;
 
 import com.my.pojo.Category;
 import com.my.pojo.vo.CategoryVO;
+import com.my.pojo.vo.NewItemsVO;
 
 import java.util.List;
 
@@ -13,4 +14,6 @@ public interface CategoryService {
     List<Category> queryAllRootLevelCat();
 
     List<CategoryVO> getSubCatList(Integer rootCatId);
+
+    List<NewItemsVO> getSixNewItemsLazy(Integer rootCatId);
 }
