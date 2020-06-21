@@ -1,21 +1,25 @@
 package com.my.service.impl;
 
-import com.my.mapper.ItemsImgMapper;
-import com.my.mapper.ItemsMapper;
-import com.my.mapper.ItemsParamMapper;
-import com.my.mapper.ItemsSpecMapper;
-import com.my.pojo.Items;
-import com.my.pojo.ItemsImg;
-import com.my.pojo.ItemsParam;
-import com.my.pojo.ItemsSpec;
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
+import com.my.enums.CommentLevel;
+import com.my.mapper.*;
+import com.my.pojo.*;
+import com.my.pojo.vo.CommentLevelCountsVO;
+import com.my.pojo.vo.ItemCommentVO;
+import com.my.pojo.vo.SearchItemsVO;
 import com.my.service.ItemService;
+import com.my.utils.DesensitizationUtil;
+import com.my.utils.PagedGridResult;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import tk.mybatis.mapper.entity.Example;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @Author xzw
@@ -32,7 +36,10 @@ public class ItemServiceImpl implements ItemService {
     ItemsSpecMapper itemsSpecMapper;
     @Autowired
     ItemsParamMapper itemsParamMapper;
-
+    @Autowired
+    ItemsCommentsMapper itemsCommentsMapper;
+    @Autowired
+    ItemsMapperCustom itemsMapperCustom;
 
     @Transactional(propagation = Propagation.SUPPORTS)
     @Override
@@ -70,4 +77,89 @@ public class ItemServiceImpl implements ItemService {
         ItemsParam itemsParam = itemsParamMapper.selectOneByExample(example);
         return itemsParam;
     }
+
+    @Transactional(propagation = Propagation.SUPPORTS)
+    @Override
+    public CommentLevelCountsVO queryCommentCounts(String itemId) {
+        CommentLevelCountsVO commentLevelCountsVO = new CommentLevelCountsVO();
+        Integer totalCounts = getCommentCounts(itemId,null);
+        Integer goodCounts = getCommentCounts(itemId, CommentLevel.GOOD.type);
+        Integer normalCounts = getCommentCounts(itemId,CommentLevel.NORMAL.type);
+        Integer badCounts = getCommentCounts(itemId,CommentLevel.BAD.type);
+        commentLevelCountsVO.setTotalCounts(totalCounts);
+        commentLevelCountsVO.setGoodCounts(goodCounts);
+        commentLevelCountsVO.setNormalCounts(normalCounts);
+        commentLevelCountsVO.setBadCounts(badCounts);
+        return commentLevelCountsVO;
+    }
+
+    Integer getCommentCounts(String itemId,Integer level){
+
+        ItemsComments itemsComments = new ItemsComments();
+        itemsComments.setItemId(itemId);
+        if(level != null){
+            itemsComments.setCommentLevel(level);
+        }
+        Integer count =itemsCommentsMapper.selectCount(itemsComments);
+        return count;
+    }
+
+    @Transactional(propagation = Propagation.SUPPORTS)
+    @Override
+    public PagedGridResult queryPagedComments(String itemId, Integer level,Integer page,Integer pageSize) {
+        Map<String,Object> map = new HashMap<>();
+        map.put("itemId",itemId);
+        map.put("level",level);
+        PageHelper.startPage(page,pageSize);
+
+        List<ItemCommentVO> list = itemsMapperCustom.queryItemComments(map);
+
+        for(ItemCommentVO vo : list){
+            vo.setNickname(DesensitizationUtil.commonDisplay(vo.getNickname()));
+        }
+
+        return setterPagedGrid(list,page);
+    }
+
+    @Transactional(propagation = Propagation.SUPPORTS)
+    @Override
+    public PagedGridResult searhItems(String keywords, String sort, Integer page, Integer pageSize) {
+
+        Map<String, Object> map = new HashMap<>();
+        map.put("keywords", keywords);
+        map.put("sort", sort);
+
+        PageHelper.startPage(page, pageSize);
+        List<SearchItemsVO> list = itemsMapperCustom.searchItems(map);
+
+        return setterPagedGrid(list, page);
+    }
+
+    @Transactional(propagation = Propagation.SUPPORTS)
+    @Override
+    public PagedGridResult searhItems(Integer catId, String sort, Integer page, Integer pageSize) {
+        Map<String, Object> map = new HashMap<>();
+        map.put("catId", catId);
+        map.put("sort", sort);
+
+        PageHelper.startPage(page, pageSize);
+        List<SearchItemsVO> list = itemsMapperCustom.searchItemsByThirdCat(map);
+
+        return setterPagedGrid(list, page);
+    }
+
+    private PagedGridResult setterPagedGrid(List<?> list,Integer page){
+
+
+        PageInfo<?> pageList = new PageInfo<>(list);
+        PagedGridResult grid = new PagedGridResult();
+        grid.setPage(page);
+        grid.setRows(list);
+        grid.setTotal(pageList.getPages());
+        grid.setRecords(pageList.getTotal());
+
+        return grid;
+    }
+
+
 }
