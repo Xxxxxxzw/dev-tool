@@ -2,10 +2,7 @@ package com.my.controller;
 
 import com.my.enums.YesOrNo;
 import com.my.pojo.*;
-import com.my.pojo.vo.CategoryVO;
-import com.my.pojo.vo.CommentLevelCountsVO;
-import com.my.pojo.vo.ItemInfoVO;
-import com.my.pojo.vo.NewItemsVO;
+import com.my.pojo.vo.*;
 import com.my.service.CarouselService;
 import com.my.service.CategoryService;
 import com.my.service.ItemService;
@@ -156,4 +153,19 @@ public class ItemController {
 
         return JSONResult.ok(grid);
     }
+
+    //用于长时间用户未登录，刷新购物车中的数据（主要是商品价格）
+    @ApiOperation(value = "根据商品规格ids查找商品数据", notes = "根据商品规格ids查找商品数据", httpMethod = "GET")
+    @GetMapping("/refresh")
+    public JSONResult refresh(
+            @ApiParam(name = "itemSpecIds", value = "商品规格ids", required = true ,example = "1001,1002,1003")
+            @RequestParam String itemSpecIds) {
+
+        if(StringUtils.isBlank(itemSpecIds)){
+            return JSONResult.ok();
+        }
+        List<ShopcartVO> list = itemService.queryItemsBySpecIds(itemSpecIds);
+        return JSONResult.ok(list);
+    }
+
 }

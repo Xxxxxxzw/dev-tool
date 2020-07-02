@@ -73,7 +73,6 @@ public class IndexController {
         if(rootCatId == null){
             return JSONResult.errorMsg("未传入一级分类id");
         }
-
         List<NewItemsVO> list = categoryService.getSixNewItemsLazy(rootCatId);
         return JSONResult.ok(list);
     }

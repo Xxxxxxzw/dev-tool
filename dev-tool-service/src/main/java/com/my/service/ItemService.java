@@ -6,6 +6,7 @@ import com.my.pojo.ItemsParam;
 import com.my.pojo.ItemsSpec;
 import com.my.pojo.vo.CommentLevelCountsVO;
 import com.my.pojo.vo.ItemCommentVO;
+import com.my.pojo.vo.ShopcartVO;
 import com.my.utils.PagedGridResult;
 
 import java.util.List;
@@ -48,4 +49,6 @@ public interface ItemService {
      */
     public PagedGridResult searhItems(Integer catId, String sort,
                                       Integer page, Integer pageSize);
+
+    public List<ShopcartVO> queryItemsBySpecIds(String specIds);
 }
