@@ -1,6 +1,7 @@
 package com.my.controller;
 
 import com.my.pojo.BO.AddressBO;
+import com.my.pojo.UserAddress;
 import com.my.service.AddressService;
 import com.my.utils.JSONResult;
 import com.my.utils.MobileEmailUtils;
@@ -9,6 +10,8 @@ import io.swagger.annotations.ApiOperation;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 /**
  * @Author xzw
@@ -30,6 +33,18 @@ public class AddressController {
      * 4. 修改收货地址
      * 5. 设置默认地址
      */
+
+    @ApiOperation(value = "用户查询地址列表", notes = "用户查询地址列表", httpMethod = "POST")
+    @PostMapping("/list")
+    public JSONResult list(@RequestParam String userId) {
+
+        if (StringUtils.isBlank(userId)) {
+            return JSONResult.errorMsg("");
+        }
+        List<UserAddress> list = addressService.queryAll(userId);
+
+        return JSONResult.ok(list);
+    }
 
     @ApiOperation(value = "用户新增地址", notes = "用户新增地址", httpMethod = "POST")
     @PostMapping("/add")

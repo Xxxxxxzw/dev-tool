@@ -54,6 +54,7 @@ public class AddressServiceImpl implements AddressService {
         userAddress.setId(addressId);
         userAddress.setCreatedTime(new Date());
         userAddress.setUpdatedTime(new Date());
+        userAddressMapper.insert(userAddress);
     }
 
     @Transactional(propagation = Propagation.REQUIRED)
