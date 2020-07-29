@@ -129,11 +129,11 @@
         update
             items_spec
         set
-            stock = stock - #{pendingCounts}
+            stock = stock - #{buyCounts}
         where
             id = #{specId}
         and
-            stock >= #{pendingCounts}
+            stock >= #{buyCounts}
 
     </update>
 </mapper>

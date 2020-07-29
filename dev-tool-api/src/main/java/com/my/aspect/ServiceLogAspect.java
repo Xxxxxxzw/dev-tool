@@ -47,7 +47,6 @@ public class ServiceLogAspect {
         long begin = System.currentTimeMillis();
 
         Object result = proceedingJoinPoint.proceed();
-
         // 记录结束时间
         long end = System.currentTimeMillis();
 
@@ -59,7 +58,6 @@ public class ServiceLogAspect {
         } else {
             logger.info("====== 执行结束，耗时：{} 毫秒 ======", takeTime);
         }
-
         return result;
     }
 }
