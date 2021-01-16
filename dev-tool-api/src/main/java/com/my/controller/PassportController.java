@@ -88,7 +88,6 @@ public class PassportController {
             return JSONResult.errorMsg("用户名或密码为空");
         }
 
-
         Users users = userService.queryUserLogin(username, MD5Utils.getMD5Str(password));
         if(users == null){
             return JSONResult.errorMsg("用户名或密码不正确");
