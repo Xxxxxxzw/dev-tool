@@ -4,7 +4,7 @@
 #
 ############################################################
 server:
-  port: 8088
+  port: 8090
   tomcat:
     uri-encoding: UTF-8
   max-http-header-size: 80KB
@@ -41,6 +41,11 @@ spring:
     password:
 #  session:
 #    store-type: redis
+  thymeleaf:
+    mode: HTML
+    encoding: UTF-8
+    prefix: classpath:/templates/
+    suffix: .html
 ############################################################
 #
 # mybatis 配置

@@ -21,6 +21,7 @@
         <module>dev-tool-mapper</module>
         <module>dev-tool-api</module>
         <module>dev-tool-service</module>
+        <module>dev-tool-sso</module>
     </modules>
 
     <properties>
