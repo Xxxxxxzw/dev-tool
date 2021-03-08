@@ -11,6 +11,9 @@ import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.SearchHits;
 import org.elasticsearch.search.fetch.subphase.highlight.HighlightBuilder;
 import org.elasticsearch.search.fetch.subphase.highlight.HighlightField;
+import org.elasticsearch.search.sort.SortBuilder;
+import org.elasticsearch.search.sort.SortBuilders;
+import org.elasticsearch.search.sort.SortOrder;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -45,11 +48,11 @@ public class Test {
     @org.junit.Test
     public void indexEs(){
         Stu stu = new Stu();
-        stu.setStuId(1003L);
+        stu.setStuId(1002L);
         stu.setAge(34);
-        stu.setDescription("666666,I love u!");
-        stu.setName("张三");
-        stu.setMoney(34F);
+        stu.setDescription("good day!");
+        stu.setName("李四");
+        stu.setMoney(88F);
         IndexQuery indexQuery = new IndexQueryBuilder().withObject(stu).build();
         elasticsearchTemplate.index(indexQuery);
     }
@@ -90,6 +93,7 @@ public class Test {
                 .withQuery(QueryBuilders.matchQuery("description","day"))
                 .withHighlightFields(new HighlightBuilder.Field("description").preTags(preTag).postTags(postTag))
                 .withPageable(pageable)
+                .withSort(SortBuilders.fieldSort("age").order(SortOrder.DESC))
                 .build();
 
         AggregatedPage<Stu> result =  elasticsearchTemplate.queryForPage(searchQuery, Stu.class, new SearchResultMapper() {
